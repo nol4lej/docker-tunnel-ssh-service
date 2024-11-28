@@ -1,0 +1,46 @@
+services:
+  tunnel.pgsql:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        PRIVATE_KEY_PATH: ${PRIVATE_KEY_PATH}
+    container_name: tunnel.pgsql
+    volumes:
+      - ${PRIVATE_KEY_PATH}:/root/.ssh/private_key.pem
+      - ./tunnel.sh:/tunnel.sh
+    environment:
+      PRIVATE_KEY_PATH: ${PRIVATE_KEY_PATH}
+      TUNNEL_DB_HOST: ${TUNNEL_PGSQL_DB_HOST}
+      TUNNEL_DB_PORT: ${TUNNEL_PGSQL_DB_PORT}
+      TUNNEL_AUTH_USER: ${TUNNEL_AUTH_USER}
+      TUNNEL_AUTH_HOST: ${TUNNEL_AUTH_HOST}
+      TUNNEL_AUTH_PORT: ${TUNNEL_AUTH_PORT}
+      TUNNEL_SHARED_PORT: ${TUNNEL_SHARED_PORT}
+    networks:
+      - test-network
+    command: [ "sh", "/tunnel.sh" ]
+  tunnel.mysql:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        PRIVATE_KEY_PATH: ${PRIVATE_KEY_PATH}
+    container_name: tunnel.mysql
+    volumes:
+      - ${PRIVATE_KEY_PATH}:/root/.ssh/private_key.pem
+      - ./tunnel.sh:/tunnel.sh
+    environment:
+      PRIVATE_KEY_PATH: ${PRIVATE_KEY_PATH}
+      TUNNEL_DB_HOST: ${TUNNEL_MYSQL_DB_HOST}
+      TUNNEL_DB_PORT: ${TUNNEL_MYSQL_DB_PORT}
+      TUNNEL_AUTH_USER: ${TUNNEL_AUTH_USER}
+      TUNNEL_AUTH_HOST: ${TUNNEL_AUTH_HOST}
+      TUNNEL_AUTH_PORT: ${TUNNEL_AUTH_PORT}
+      TUNNEL_SHARED_PORT: ${TUNNEL_SHARED_PORT}
+    networks:
+      - test-network
+    command: [ "sh", "/tunnel.sh" ]
+networks:
+  test-network:
+    driver: bridge
